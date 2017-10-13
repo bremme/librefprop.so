@@ -1,6 +1,6 @@
 # ============================================================================
 # Name        : Makefile
-# Author      : Jorrit Wronski (jowr@mek.dtu.dk) 
+# Author      : Jorrit Wronski (jowr@mek.dtu.dk)
 # Copyright   : Use and modify at your own risk.
 # Description : Makefile for Refprop library from Fortran sources.
 # ============================================================================
@@ -32,7 +32,7 @@ USERHOME    :=$(HOME)
 UNAME       :=$(shell uname -s)
 ARCH        :=$(shell getconf LONG_BIT)
 
-# Fix architecture for msys builds 
+# Fix architecture for msys builds
 ifeq ($(ARCH), )
   ARCH      :=32
 endif
@@ -43,8 +43,8 @@ else
 endif
 
 ###########################################################
-#  Setting the directories for library, header and 
-#  binary files created in this makefile. 
+#  Setting the directories for library, header and
+#  binary files created in this makefile.
 ###########################################################
 HEADIR     :=./externals/REFPROP-headers
 LIBDIR     :=./fortran
@@ -57,7 +57,7 @@ ifeq ($(USERNAME),root)
   LIBINST  :=/usr/local/lib
   HEADINST :=/usr/local/include
   FILINST  :=/opt/refprop
-else 
+else
   LIBINST  :=$(USERHOME)/.refprop/lib
   HEADINST :=$(USERHOME)/.refprop/include
   FILINST  :=$(USERHOME)/.refprop
@@ -76,8 +76,8 @@ LIBS       =-l$(THENAME)# -lPocoFoundation
 # Disable optimisation for now, this should be removed again
 OPTFLAGS   =-O3 -ffast-math# -ffloat-store # optimisation, remove for debugging
 ###########################################################
-#  Change these lines if you are using a different Fortran 
-#  compiler or if you would like to use other flags. 
+#  Change these lines if you are using a different Fortran
+#  compiler or if you would like to use other flags.
 ###########################################################
 FEXT       =.f
 FC         =gfortran
@@ -88,22 +88,22 @@ FFLAGS     =$(ARCHFLAG) $(OPTFLAGS) -fPIC #-fopenmp# -Wall -pedantic# -fno-under
 endif
 
 ###########################################################
-#  Change these lines if you are using a different C++ 
-#  compiler or if you would like to use other flags. 
+#  Change these lines if you are using a different C++
+#  compiler or if you would like to use other flags.
 ###########################################################
 CPPC       =g++
-CPPFLAGS   =$(ARCHFLAG) $(OPTFLAGS) -Wall -pedantic -fbounds-check -ansi -Wpadded -Wpacked -mpreferred-stack-boundary=8
+CPPFLAGS   =$(ARCHFLAG) $(OPTFLAGS) -Wall -pedantic -fbounds-check -ansi -Wpadded -Wpacked -mpreferred-stack-boundary=8 -std=c++14 -ldl
 
 ###########################################################
 #  Change these lines if you are using a different C
-#  compiler or if you would like to use other flags. 
+#  compiler or if you would like to use other flags.
 ###########################################################
 CC         =gcc
 CFLAGS     =$(ARCHFLAG) $(CPPFLAGS)
 
 ###########################################################
 #  Change these lines if you have other needs regarding
-#  the library file.  
+#  the library file.
 ###########################################################
 LIBFILE   =PASS_FTN_ALT
 ifeq ($(UNAME), Linux)
@@ -117,7 +117,7 @@ else ifeq ($(UNAME), Darwin)
   #LIBFLAGS                =-static -o $(BINDIR)/$(LIBRARY)$(LIBRARYEXTENSION) -install_name $(LIBINST)/$(LIBRARY)$(LIBRARYEXTENSION) -current_version $(MAJORVERSION) -compatibility_version $(MAJORVERSION) $(FLINKFLAGS)
   #LIBFLAGS                =-dynamic -o $(BINDIR)/$(LIBRARY)$(LIBRARYEXTENSION) -install_name $(LIBINST)/$(LIBRARY)$(LIBRARYEXTENSION) -current_version $(MAJORVERSION) -compatibility_version $(MAJORVERSION) $(FLINKFLAGS)
   #LINKCOMM                = libtool $(LIBFLAGS) $(SRCDIR)/$(LIBFILE).o $(LIBOBJECTFILES)
-else 
+else
   LIBRARY   =$(THENAME)
   DYNAMICLIBRARYEXTENSION =.dll
   LIBFLAGS                =-shared -Wl,-soname,$(LIBRARY)$(DYNAMICLIBRARYEXTENSION).$(MAJORVERSION)
@@ -158,8 +158,8 @@ LIBOBJECTFILES = \
 	$(LIBDIR)/TRNS_VIS.o \
 	$(LIBDIR)/TRNSP.o \
 	$(LIBDIR)/UTILITY.o
-	
-	
+
+
 ###########################################################
 #  Set the default goal.
 ###########################################################
@@ -170,7 +170,7 @@ all           : header library
 ###########################################################
 #  Copy files to places recognised by the system.
 ###########################################################
-.PHONY  : install 
+.PHONY  : install
 ifeq ($(UNAME), Linux)
   install : install-linux
 endif
@@ -183,17 +183,17 @@ install-linux : header library install-fluids
 	$(MK) $(HEADINST) $(LIBINST)
 	$(MV) $(BINHEADERFILE) $(INSTHEADERFILE)
 	$(CP) $(BINDIR)/$(LIBRARY)$(LIBRARYEXTENSION) $(LIBINST)/$(LIBRARY)$(LIBRARYEXTENSION).$(MAJORVERSION).$(MINORVERSION)
-	$(CH) $(CMF) $(INSTHEADERFILE) 
+	$(CH) $(CMF) $(INSTHEADERFILE)
 	$(CH) $(CMF) $(LIBINST)/$(LIBRARY)$(LIBRARYEXTENSION).$(MAJORVERSION).$(MINORVERSION)
 	$(LN) $(LIBINST)/$(LIBRARY)$(LIBRARYEXTENSION).$(MAJORVERSION).$(MINORVERSION) $(LIBINST)/$(LIBRARY)$(LIBRARYEXTENSION).$(MAJORVERSION)
 	$(LN) $(LIBINST)/$(LIBRARY)$(LIBRARYEXTENSION).$(MAJORVERSION)                 $(LIBINST)/$(LIBRARY)$(LIBRARYEXTENSION)
 	$(LN) $(LIBINST)/$(LIBRARY)$(LIBRARYEXTENSION)                                 $(FILINST)/$(LIBRARY)$(LIBRARYEXTENSION)
 ifeq ($(USERNAME),root)
 	$(LD)
-else 
+else
 	@echo "------------------ IMPORTANT NOTICE ------------------"
 	@echo "You are not root:"
-	# This code exports the path for the next command: 
+	# This code exports the path for the next command:
 	export LD_LIBRARY_PATH=$(LIBINST)
 	# Remember to preceed all your commands with it to use the locally installed library.
 endif
@@ -205,7 +205,7 @@ install-mac   : header library install-fluids
 	install    -m $(CMF) -o $(USERNAME) -g admin $(BINDIR)/$(LIBRARY)$(LIBRARYEXTENSION) $(LIBINST)/$(LIBRARY).$(MAJORVERSION).$(MINORVERSION)$(LIBRARYEXTENSION)
 	$(LN) $(LIBINST)/$(LIBRARY).$(MAJORVERSION).$(MINORVERSION)$(LIBRARYEXTENSION)    $(LIBINST)/$(LIBRARY)$(LIBRARYEXTENSION)
 	$(LN) $(LIBINST)/$(LIBRARY)$(LIBRARYEXTENSION)                                    $(FILINST)/$(LIBRARY)$(LIBRARYEXTENSION)
-	
+
 .PHONY       : install-fluids
 install-fluids :
 	$(MK) $(FILINST)
@@ -214,20 +214,20 @@ install-fluids :
 	$(CH) $(CMF) $(FILINST)/fluids/* $(FILINST)/mixtures/*
 
 .PHONY       : uninstall
-uninstall    : 
+uninstall    :
 	$(RM) $(INSTHEADERFILE)
 	$(RM) $(LIBINST)/$(LIBRARY)$(LIBRARYEXTENSION)*
 	$(RM) -r $(FILINST)
 
 ###########################################################
-#  Compile the Fortran sources into a library file that can 
+#  Compile the Fortran sources into a library file that can
 #  be used as a shared object.
 ###########################################################
 .PHONY     : header
 header     : $(BINHEADERFILE)
 
 .PHONY     : library
-library    : $(BINDIR)/$(LIBRARY)$(LIBRARYEXTENSION) 
+library    : $(BINDIR)/$(LIBRARY)$(LIBRARYEXTENSION)
 
 $(BINDIR)/$(LIBRARY)$(LIBRARYEXTENSION) : $(SRCDIR)/$(LIBFILE).o $(LIBOBJECTFILES)
 	$(MK) $(BINDIR)
@@ -240,7 +240,7 @@ $(SRCDIR)/$(LIBFILE)$(FEXT): $(LIBDIR)/PASS_FTN.FOR $(LIBDIR)/COMMONS$(FEXT) $(L
 	$(SE) -i.du "s/'comtrn.for'/'COMTRN$(FEXT)'/" $(SRCDIR)/$(LIBFILE)$(FEXT)
 
 ###########################################################
-#  Automate the integration with Matlab. This is a work in 
+#  Automate the integration with Matlab. This is a work in
 #  progress and there are still some pitfalls...
 #  However, contributions from nkampy and speredenn helped
 #  a lot!
@@ -263,7 +263,7 @@ endif
 
 .PHONY     : matlab-install
 ifeq ($(ARCH), 32)
-matlab-install   : matlab-install32 
+matlab-install   : matlab-install32
 else
   ifeq ($(ARCH), 64)
 matlab-install   : matlab-install64
@@ -298,7 +298,7 @@ endif
 $(MATDIR)/%.m: $(MATDIR)/%.m.org
 	$(CP) $(MATDIR)/$*.m.org $(MATDIR)/$*.m
 
-$(MATDIR)/%.m.org: 
+$(MATDIR)/%.m.org:
 	$(CU) $(URL_NIST)/$*.m > $(MATDIR)/$*.m.org
 
 
@@ -315,7 +315,7 @@ $(BINHEADERFILE): $(SRCHEADERFILE)
 
 $(SRCDIR)/%.o : $(SRCDIR)/%$(FEXT)
 	$(FC) $(FFLAGS) -I $(LIBDIR)/ -o $(SRCDIR)/$*.o -c $<
-	
+
 $(SRCDIR)/%.o : $(SRCDIR)/%.cpp
 	$(CPPC) $(CPPFLAGS) -o $(SRCDIR)/$*.o -c $<
 
@@ -329,14 +329,14 @@ $(LIBDIR)/%$(FEXT) : $(LIBDIR)/%.FOR
 	$(CP) $(LIBDIR)/$*.FOR $(LIBDIR)/$*$(FEXT)
 	$(SE) -i.du "s/'commons.for'/'COMMONS$(FEXT)'/" $(LIBDIR)/$*$(FEXT)
 	$(SE) -i.du "s/'comtrn.for'/'COMTRN$(FEXT)'/" $(LIBDIR)/$*$(FEXT)
-	
+
 .PHONY: clean
 clean:
 	$(RM) **.o **.so **.a **.dylib **.mod $(BINDIR)/* $(SRCDIR)/*.o $(LIBDIR)/*$(FEXT) $(LIBDIR)/*$(FEXT).du $(LIBDIR)/*.o $(SRCDIR)/$(LIBFILE)$(FEXT) $(SRCDIR)/$(LIBFILE)$(FEXT).du $(MATDIR)/r*.m* $(MATDIR)/*.so
 
 ###########################################################
 #  Compile a simple example to illustrate the connection
-#  between C++ and Fortran as well as the usage of the 
+#  between C++ and Fortran as well as the usage of the
 #  created library.
 ###########################################################
 .PHONY            : test
@@ -353,7 +353,7 @@ fortest           : $(BINDIR)/fortest
 $(BINDIR)/fortest : $(SRCDIR)/ex_mix.for
 	$(FC) $(FFLAGS)     -g -o $<.o -c $<
 	$(FC) $(FLINKFLAGS) -g -o $@ $<.o -L$(BINDIR) $(LIBS)
-	
+
 .PHONY           : print-flags
 print-flags      :
 	@echo "LINKCOMM: $(LINKCOMM)\n"
